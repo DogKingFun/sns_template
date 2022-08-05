@@ -20,7 +20,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // authorization
-//require("./config/passport")(app);
+require("./config/passport")(app);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);

@@ -9,17 +9,19 @@ const db = mongo.db();
 const col = mongo.col(db,'user');
 
 module.exports = function (app) {
-  passport.serializeUser(function (user, done) {
-    done(null, user.id);
+  passport.serializeUser(async function (user, done) {
+console.log(user);
+    done(null, user._id);
   });
 
   passport.deserializeUser(async function (id, done) {
+console.log(id);
     try {
-      let query = { id:id };
+      let query = { _id:id };
       let optiions = {
         projection:{ _id:1 ,}
       }
-      const user = await col.findOne(id);
+      const user = await col.findOne(query,options);
       done(null, user);
     } catch (error) {
       done(error, null);
@@ -29,8 +31,26 @@ module.exports = function (app) {
   passport.use(new LocalStrategy({
       usernameField: "username",
       passwordField: "password",
-    }, function (username, password, done) {
-      
+    }, async function (username, password, done) {
+console.log(username);
+console.log(password);
+      let query = { _id:username };
+      let optiions = {
+        projection:{ _id:1 , password:1 ,}
+      }
+      try{
+        let user = await col.findOne(query,options);
+        if(!user){
+  	  return done(null,false,{message: "Invaid User"});
+        }else if(await bcrypt.compare(password,user.password)){
+	  return done(null,user);
+        }else{
+ 	  return done(null, false, {message: "Invalid User"});
+        }
+      }catch(err){
+        console.error(err);
+        return done(null, false, {message: err.toString()})
+      }
       /*
       knex("users")
         .where({
