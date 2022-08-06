@@ -10,12 +10,12 @@ const col = mongo.col(db,'user');
 
 module.exports = function (app) {
   passport.serializeUser(async function (user, done) {
-console.log(user);
+console.log('serializeUser');
     done(null, user._id);
   });
 
   passport.deserializeUser(async function (id, done) {
-console.log(id);
+console.log('deserializeUser');
     try {
       let query = { _id:id };
       let optiions = {
@@ -35,42 +35,24 @@ console.log(id);
 console.log(username);
 console.log(password);
       let query = { _id:username };
-      let optiions = {
+      let options = {
         projection:{ _id:1 , password:1 ,}
       }
       try{
         let user = await col.findOne(query,options);
         if(!user){
-  	  return done(null,false,{message: "Invaid User"});
+  	  return done(null,false);
         }else if(await bcrypt.compare(password,user.password)){
+          console.log(user);
+          console.log('successful');
 	  return done(null,user);
         }else{
- 	  return done(null, false, {message: "Invalid User"});
+ 	  return done(null, false);
         }
       }catch(err){
         console.error(err);
-        return done(null, false, {message: err.toString()})
+        return done(err);
       }
-      /*
-      knex("users")
-        .where({
-          name: username,
-        })
-        .select("*")
-        .then(async function (results) {
-          if (results.length === 0) {
-            return done(null, false, {message: "Invalid User"});
-          } else if (await bcrypt.compare(password, results[0].password)) {
-            return done(null, results[0]);
-          } else {
-            return done(null, false, {message: "Invalid User"});
-          }
-        })
-        .catch(function (err) {
-          console.error(err);
-          return done(null, false, {message: err.toString()})
-        });
-      */
     }
   ));
 

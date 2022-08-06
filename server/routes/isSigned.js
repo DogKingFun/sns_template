@@ -3,7 +3,7 @@ module.exports = function(req, res, next){
     if(req.isAuthenticated())
         return next();  // ログイン済み
     // ログインしてなかったらログイン画面に飛ばす
-    res.redirect("/login");
+    res.redirect("/auth/signin");
 };
 
 /*
