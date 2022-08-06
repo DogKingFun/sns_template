@@ -9,17 +9,19 @@ const db = mongo.db();
 const col = mongo.col(db,'user');
 
 module.exports = function (app) {
-  passport.serializeUser(function (user, done) {
-    done(null, user.id);
+  passport.serializeUser(async function (user, done) {
+console.log('serializeUser');
+    done(null, user._id);
   });
 
   passport.deserializeUser(async function (id, done) {
+console.log('deserializeUser');
     try {
-      let query = { id:id };
-      let optiions = {
+      let query = { _id:id };
+      let options = {
         projection:{ _id:1 ,}
       }
-      const user = await col.findOne(id);
+      const user = await col.findOne(query,options);
       done(null, user);
     } catch (error) {
       done(error, null);
@@ -29,28 +31,25 @@ module.exports = function (app) {
   passport.use(new LocalStrategy({
       usernameField: "username",
       passwordField: "password",
-    }, function (username, password, done) {
-      
-      /*
-      knex("users")
-        .where({
-          name: username,
-        })
-        .select("*")
-        .then(async function (results) {
-          if (results.length === 0) {
-            return done(null, false, {message: "Invalid User"});
-          } else if (await bcrypt.compare(password, results[0].password)) {
-            return done(null, results[0]);
-          } else {
-            return done(null, false, {message: "Invalid User"});
-          }
-        })
-        .catch(function (err) {
-          console.error(err);
-          return done(null, false, {message: err.toString()})
-        });
-      */
+    }, async function (username, password, done) {
+      let query = { _id:username };
+      let options = {
+        projection:{ _id:1 , password:1 ,}
+      }
+      try{
+        let user = await col.findOne(query,options);
+        if(!user){
+  	  return done(null,false);
+        }else if(await bcrypt.compare(password,user.password)){
+          console.log('successful');
+	  return done(null,user);
+        }else{
+ 	  return done(null, false);
+        }
+      }catch(err){
+        console.error(err);
+        return done(err);
+      }
     }
   ));
 
