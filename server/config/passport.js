@@ -18,7 +18,7 @@ console.log('serializeUser');
 console.log('deserializeUser');
     try {
       let query = { _id:id };
-      let optiions = {
+      let options = {
         projection:{ _id:1 ,}
       }
       const user = await col.findOne(query,options);
@@ -32,8 +32,6 @@ console.log('deserializeUser');
       usernameField: "username",
       passwordField: "password",
     }, async function (username, password, done) {
-console.log(username);
-console.log(password);
       let query = { _id:username };
       let options = {
         projection:{ _id:1 , password:1 ,}
@@ -43,7 +41,6 @@ console.log(password);
         if(!user){
   	  return done(null,false);
         }else if(await bcrypt.compare(password,user.password)){
-          console.log(user);
           console.log('successful');
 	  return done(null,user);
         }else{

@@ -6,10 +6,15 @@ router.get('/', function(req, res){
   res.render("signin");
 });
 
-router.post('/', 
-  passport.authenticate('local', { failureRedirect: '/signin' }),
-  function(req, res) {
-    res.redirect('/');
+router.post('/', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err); }
+    if (!user) { return res.redirect('/auth/signin'); }
+    req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      return res.send('signin complete');
+    });
+  })(req, res, next);
 });
 /*
 router.post('/',function(req, res, next ){
