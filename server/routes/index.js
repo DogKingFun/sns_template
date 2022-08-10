@@ -3,8 +3,7 @@ var mongo = require('../mongo.js');
 var ObjectId = require('mongodb').ObjectID;
 var router = express.Router();
 
-var db = mongo.db();
-var col = mongo.col(db,'test-collection');
+var col = mongo.col('test-collection');
 var id = new ObjectId();
 col.insertOne({_id:id,n:0});
 

@@ -5,8 +5,7 @@ const cookieSession = require("cookie-session");
 const mongo = require('../mongo.js');
 const secret = "secretCuisine123";
 
-const db = mongo.db();
-const col = mongo.col(db,'user');
+const col = mongo.col('user');
 
 module.exports = function (app) {
   passport.serializeUser(async function (user, done) {

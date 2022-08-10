@@ -3,18 +3,16 @@ const username = 'username';
 const password = 'password';
 
 module.exports = {
-  'db' : function () {
+  'col' : function(col){
     try {
       const URL = `mongodb://${username}:${password}@mongo/sns?authSource=admin`;
       const client = new MongoClient(URL);
       client.connect();
+      const db = client.db();
       console.log('Succesfully connected to mongo');
-      return client.db();
+      return db.collection(col);
     } catch (e) {
       console.error(e);
     }
-  },
-  'col' : function(db,col){
-    return db.collection(col);
   }
 };

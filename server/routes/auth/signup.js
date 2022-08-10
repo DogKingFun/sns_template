@@ -5,8 +5,7 @@ const mongo = require('../../mongo.js');
 
 const rounds = 8;
 
-const db = mongo.db();
-const col = mongo.col(db,'user');
+const col = mongo.col('user');
 
 router.get('/', function(req, res){
   res.render("signup");
